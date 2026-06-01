@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  gymsaas-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gymsaas-dev
+    container_name: gymsaas_container
+    ports:
+      - "3000:3000"  # Next.js Admin
+      - "3001:3001"  # Next.js Cliente
+      - "5000:5000"  # Node.js Backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/admin-dashboard/node_modules
+      - /app/apps/client-webapp/node_modules
+      - /app/packages/apis-backend/node_modules
+    environment:
+      - NODE_ENV=development

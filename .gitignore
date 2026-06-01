@@ -1,0 +1,15 @@
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Next.js compilaciones
+.next/
+**/.next/
+out/
+
+# Logs y temporales
+*.log
+pnpm-debug.log*
+.DS_Store
+.env
+.env.local
