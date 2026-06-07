@@ -19,3 +19,22 @@ services:
       - /app/packages/apis-backend/node_modules
     environment:
       - NODE_ENV=development
+    depends_on:
+      - db                          # ← espera a que la DB esté lista
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    container_name: gymsaas_db
+    environment:
+      POSTGRES_USER: gym_user
+      POSTGRES_PASSWORD: gym_pass
+      POSTGRES_DB: gymsaas
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./packages/apis-backend/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  db-data:
