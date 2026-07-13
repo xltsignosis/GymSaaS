@@ -40,3 +40,4 @@ pnpm approve-builds
 Enciende todas las aplicaciones (Admin, Cliente y Backend) al mismo tiempo con un solo comando:
 
 pnpm dev
+

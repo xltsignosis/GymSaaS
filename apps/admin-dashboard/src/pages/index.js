@@ -1,6 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function DashboardAdmin() {
+  const router = useRouter();
+  const [sesion, setSesion] = useState(null);
+  const [verificando, setVerificando] = useState(true);
+
+  // Protección de ruta: si no hay sesión guardada, redirige a /login
+  useEffect(() => {
+    const data = localStorage.getItem('gymsaas_admin_session');
+    if (!data) {
+      router.replace('/login');
+    } else {
+      setSesion(JSON.parse(data));
+      setVerificando(false);
+    }
+  }, [router]);
+
+  function handleLogout() {
+    localStorage.removeItem('gymsaas_admin_session');
+    router.push('/login');
+  }
+
   // Estados simulados (más adelante se conectarán a la API de Node.js con fetch)
   const [afluencia, setAfluencia] = useState(45); // Número de personas dentro
   const [capacidadMaxima] = useState(80);
@@ -9,6 +30,11 @@ export default function DashboardAdmin() {
     { id: 2, nombre: "María López", hora: "21:15", estatus: "Vencido" },
     { id: 3, nombre: "Carlos Gómez", hora: "20:45", estatus: "Pagado" },
   ]);
+
+  // Mientras se verifica la sesión, no mostramos el dashboard
+  if (verificando) {
+    return null;
+  }
 
   // Lógica simple para el color del semáforo de afluencia
   const porcentaje = (afluencia / capacidadMaxima) * 100;
@@ -27,13 +53,19 @@ export default function DashboardAdmin() {
     <div className="container">
       {/* Barra Lateral / Sidebar */}
       <aside className="sidebar">
-        <h2>GymSAAS 🏋️‍♂️</h2>
+        <h2>GymSAAS </h2>
         <nav>
-          <a href="#" className="active">Dashboard</a>
-          <a href="#">Usuarios</a>
-          <a href="#">Pagos y Planes</a>
-          <a href="#">Configuración</a>
+          <a href="/" className="active">Dashboard</a>
+          <a href="/usuarios">Usuarios</a>
+          <a href="/pagos">Pagos y Planes</a>
+          <a href="/configuracion">Configuración</a>
         </nav>
+        <div className="sidebar-footer">
+          {sesion && <p className="sidebar-user">{sesion.email}</p>}
+          <button className="btn-logout" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
       </aside>
 
       {/* Contenido Principal */}
@@ -146,6 +178,37 @@ export default function DashboardAdmin() {
         .sidebar nav a:hover, .sidebar nav a.active {
           background-color: #334155;
           color: #fff;
+        }
+
+        .sidebar-footer {
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #334155;
+        }
+
+        .sidebar-user {
+          color: #94a3b8;
+          font-size: 0.8rem;
+          margin-bottom: 0.75rem;
+          word-break: break-all;
+        }
+
+        .btn-logout {
+          width: 100%;
+          padding: 0.6rem 1rem;
+          border: 1px solid #475569;
+          border-radius: 6px;
+          background-color: transparent;
+          color: #f1f5f9;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+          background-color: #ef4444;
+          border-color: #ef4444;
         }
 
         /* Main Content Styles */
