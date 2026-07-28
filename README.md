@@ -1,42 +1,73 @@
-# GymSaaS - Gestión para Gimnasios
+# GymSAAS
 
-Este es un sistema SaaS integral diseñado para optimizar la gestión operativa, control de accesos y retención de clientes en gimnasios. El proyecto está estructurado como un **Monorepo** utilizando **pnpm workspaces** para mejorar la eficiencia del almacenamiento y agilizar el desarrollo en equipo.
+SaaS inicial para gimnasio con:
 
-## Stack Tecnológico
-- **Frontend (Admin & Cliente):** Next.js (JavaScript puro + CSS integrado, sin Tailwind).
-- **Backend (API):** Node.js + Express.js (JavaScript puro).
-- **Gestor de Paquetes:** pnpm.
-- **Contenerización:** Docker & Docker Compose.
+- Dashboard administrativo.
+- Dashboard de usuario.
+- Asistente de rutina sin texto libre.
+- Backend Node con validacion por whitelist.
+- Herramienta Python de aprendizaje supervisado entrenada con casos aprobados por coach.
 
----
+## Requisitos
 
-## Guía de Inicio Rápido (Con Docker) - RECOMENDADO
+- Node.js
+- pnpm
+- Python 3
 
-Para asegurar que todo el equipo trabaje exactamente en el mismo entorno de desarrollo (sin importar el sistema operativo), usamos Docker.
+Si Python no esta en el PATH, configura `PYTHON_BIN` con la ruta completa a `python.exe`.
 
-### Requisitos previos:
-- Tener instalado y encendido.
+## Ejecutar
 
-### Pasos para levantar el proyecto:
-1. Clona este repositorio en tu computadora.
-2. Abre una terminal en la raíz del proyecto (`gymsaas`).
-3. Ejecuta el siguiente comando para construir y encender los servidores por primera vez:
-   ```bash
-   docker compose up --build
+Instala dependencias:
 
-Tener instalado Node.js (versión 18 o superior).
-
-Tener instalado pnpm. Si no lo tienes, instálalo abriendo la terminal como administrador y corriendo:
-npm install -g pnpm
-
-Pasos para levantar el proyecto local:
-Abre la terminal en la raíz del proyecto y descarga todas las dependencias del Workspace:
-
+```bash
 pnpm install
-Si te aparece un error de bloqueo con la librería sharp de Next.js, aprueba los permisos ejecutando:
+```
 
+Levanta todo:
 
-pnpm approve-builds
-Enciende todas las aplicaciones (Admin, Cliente y Backend) al mismo tiempo con un solo comando:
-
+```bash
 pnpm dev
+```
+
+O levanta cada pieza por separado:
+
+```bash
+pnpm dev:backend
+pnpm dev:client
+pnpm dev:admin
+```
+
+URLs principales:
+
+- Cliente: http://localhost:3000
+- Admin: normalmente http://localhost:3000 si lo levantas solo
+- Si levantas admin y cliente juntos, Next puede mover una app a http://localhost:3001. La vista que usa Python es la que dice `Dashboard de usuario`, no el panel admin.
+- Backend: http://localhost:4000/health
+- Diagnostico Python: http://localhost:4000/ai/model-health
+
+## Probar el modelo supervisado
+
+```bash
+python packages/ml-routine/routine_model.py --input-json "{\"experience\":\"beginner\",\"limitation\":\"none\",\"goal\":\"hypertrophy\",\"days\":\"3\"}"
+```
+
+Debe devolver una rutina, el tipo de modelo, confianza y si la prediccion salio de un caso exacto aprobado por coach.
+
+## Probar la API
+
+```bash
+curl -X POST http://localhost:4000/ai/workout-plan ^
+  -H "Content-Type: application/json" ^
+  -d "{\"experience\":\"beginner\",\"limitation\":\"none\",\"goal\":\"hypertrophy\",\"days\":\"3\"}"
+```
+
+Preguntas permitidas sobre la rutina:
+
+```bash
+curl -X POST http://localhost:4000/ai/routine-question ^
+  -H "Content-Type: application/json" ^
+  -d "{\"experience\":\"beginner\",\"limitation\":\"none\",\"goal\":\"hypertrophy\",\"days\":\"3\",\"questionType\":\"why\"}"
+```
+
+`questionType` permite: `why`, `warmup`, `progress`, `pain`.

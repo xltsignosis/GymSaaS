@@ -7,8 +7,10 @@
     "dev:admin": "pnpm --filter admin-dashboard dev",
     "dev:client": "pnpm --filter client-webapp dev",
     "dev:backend": "pnpm --filter apis-backend dev",
-    "dev": "pnpm dev:backend & pnpm dev:admin & pnpm dev:client",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm -r --parallel --filter admin-dashboard --filter client-webapp --filter apis-backend dev",
+    "build:client": "pnpm --filter client-webapp build",
+    "test:ml": "python packages/ml-routine/routine_model.py --input-json \"{\\\"experience\\\":\\\"beginner\\\",\\\"limitation\\\":\\\"none\\\",\\\"goal\\\":\\\"hypertrophy\\\",\\\"days\\\":\\\"3\\\"}\"",
+    "test": "pnpm build:client"
   },
   "keywords": [],
   "author": "",
